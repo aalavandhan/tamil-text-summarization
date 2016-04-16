@@ -34,3 +34,4 @@ if __name__=="__main__":
     sentrank(sys.argv)
 
 #to do : stemming
+#haven't checked for correctness

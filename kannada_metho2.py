@@ -25,4 +25,4 @@ def kannada_method2():
             sentence_score[n]['score']+=word_dic[word]
             sentence_score[n]['odia_score']+=word_dic[word]/sentence_score[n]['length']
         n+=1
-        
+#haven't checked for correctness

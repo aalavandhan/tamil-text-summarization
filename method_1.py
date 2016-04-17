@@ -8,7 +8,7 @@ if __name__ == "__main__":
 	word_dict={}
 	total_words=0
 	
-	for line in fileObj.read().split("\n"):
+	for line in fileObj.read().split("."):
 		for word in line.split():
 			total_words=total_words+1
 			word_dict.setdefault(word,0)
@@ -20,7 +20,9 @@ if __name__ == "__main__":
 	sentence_length={}
 	line_dict={}
 	fileObj=open(filePath,"r")
-	for line in fileObj.read().split("\n"):
+	for line in fileObj.read().split("."):
+		line.rstrip("\n")
+		line.lstrip("\n")
 		if len(line) != 0:
 			sentence_no=sentence_no+1
 			sentence_weight_dict.setdefault(sentence_no,0)
@@ -52,8 +54,9 @@ if __name__ == "__main__":
 
 
 	output_fileObj=open("output_method1","w")
-
+	
 	for line_no in sorted(rank, key=rank.get, reverse=True):
+		
 		output_fileObj.write(str(line_dict[line_no])+"\n")
   		output_fileObj.write("Line No:"+str(line_no)+"\t"+"RANK:" + str(rank[line_no])+"\n")
   		

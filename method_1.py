@@ -54,12 +54,5 @@ if __name__ == "__main__":
 		rank.setdefault(key,0)
 		rank[key]=(sentence_weight_dict[key]+vertex_weight[key])/float(2)
 
-
-	output_fileObj=open("output_method1","w")
-
-
-	for line_no in sorted(rank, key=rank.get, reverse=True)[1:int(number)+1]:
-		output_fileObj.write(str(line_dict[line_no]).strip()+".")
-
-
-  	output_fileObj.close()
+	for line_no in sorted(sorted(rank, key=rank.get, reverse=True)[1:int(number)+1]):
+		print str(line_dict[line_no]).strip()+"."

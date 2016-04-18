@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import sys
 import operator
+import math
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 
@@ -13,14 +14,15 @@ def sentrank(argv):
 
     f1=open(path,"r")
     s=f1.read()
-
+    if len(argv)>3:
+        heading=argv[3]
     # import pdb
     # pdb.set_trace()
 
     para_lst=s.split("\n")
     sen_no=1
     word_dic={}
-
+    head_lst=heading.split(" ")
     for para in para_lst:
         para=para.strip()
         para_pos=1
@@ -30,11 +32,13 @@ def sentrank(argv):
             for word in word_lst:
                 word=word.strip("\"")
                 word_dic.setdefault(word,0)
-            sentence.setdefault(sen_no,{'position':0,'para_position':0,'length':0,'para_pos_score':0,'pos_score':0,'len_score':0,'surface_score':0,'content':''})
+            sentence.setdefault(sen_no,{'position':0,'para_position':0,'length':0,'para_pos_score':0,'pos_score':0,'len_score':0,'surface_score':0,'content':'','topic_score':0,'count':0,'total_score':0})
             sentence[sen_no]['position']=sen_no
             sentence[sen_no]['para_position']=para_pos
             sentence[sen_no]['length']=len(word_lst)
             sentence[sen_no]['content']=sen
+            for word in head_lst:
+                sentence[sen_no]['count']+=sen.count(word)
             sen_no+=1
             para_pos+=1
         for i in range(1,para_pos):
@@ -45,12 +49,14 @@ def sentrank(argv):
         sentence[i]['len_score'] = ( sentence[i]['length'] / len(word_dic) )
 
         sentence[i]['surface_score'] = sentence[i]['pos_score'] + sentence[i]['para_pos_score'] + sentence[i]['len_score']
+        sentence[i]['topic_score']=sentence[i]['count']/(math.log(sentence[i]['length'])+math.log(len(heading_lst)))
+        sentence[i]['total_score']=sentence[i]['topic_score']+sentence[i]['surface_score']
 
-    sorted_lst=sorted(sentence.items(), key=lambda x: x[1]['surface_score'],reverse=True)
+    sorted_lst=sorted(sentence.items(), key=lambda x: x[1]['total_score'],reverse=True)
 
     for i in range(0, no_of_sentences):
         print(sentence[sorted_lst[i][0]]['content'])
-        print(sentence[sorted_lst[i][0]]['surface_score'])
+        print(sentence[sorted_lst[i][0]]['total_score'])
 
 if __name__=="__main__":
   sentrank(sys.argv)

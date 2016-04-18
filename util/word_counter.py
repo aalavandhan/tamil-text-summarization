@@ -10,7 +10,7 @@ class WordCounter:
       self.sentenceDict[s] = { }
 
       for w in ngrams[s]:
-        word = w[0]
+        word = w
 
         if word not in self.wordDict:
           self.wordDict[word] = 0

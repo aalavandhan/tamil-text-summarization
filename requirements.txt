@@ -1,1 +1,4 @@
 editdistance
+sklearn
+nltk
+scipy

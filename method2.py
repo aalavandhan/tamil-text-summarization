@@ -1,16 +1,26 @@
 #!/usr/bin/python
 import sys
 import operator
+import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize
+
+
 def sentrank(argv):
     path=argv[1]
     no_of_sentences=int(argv[2])
+
     sentence={}
-    ##f1=open("C:/Users/chetan/Desktop/tamil-text-summarization-master/article-1.txt","r",encoding="utf8")
-    f1=open(path,"r",encoding="utf8")
+
+    f1=open(path,"r")
     s=f1.read()
+
+    # import pdb
+    # pdb.set_trace()
+
     para_lst=s.split("\n")
     sen_no=1
     word_dic={}
+
     for para in para_lst:
         para=para.strip()
         para_pos=1
@@ -27,20 +37,23 @@ def sentrank(argv):
             sentence[sen_no]['content']=sen
             sen_no+=1
             para_pos+=1
-        for iter in range(1,para_pos):
-            sentence[iter]['para_pos_score']=1-sentence[iter]['para_position']/para_pos     
-    for iter in range(1,sen_no):
-        sentence[iter]['pos_score']=1-sentence[iter]['position']/sen_no
-        sentence[iter]['len_score']=sentence[iter]['length']/len(word_dic)
-        sentence[iter]['surface_score']=sentence[iter]['pos_score']+sentence[iter]['para_pos_score']+sentence[iter]['len_score']
+        for i in range(1,para_pos):
+            sentence[i]['para_pos_score']= 1 - ( sentence[i]['para_position'] / para_pos )
 
-    
+    for i in range(1,sen_no):
+        sentence[i]['pos_score'] = 1 - ( sentence[i]['position'] / sen_no )
+        sentence[i]['len_score'] = ( sentence[i]['length'] / len(word_dic) )
+
+        sentence[i]['surface_score'] = sentence[i]['pos_score'] + sentence[i]['para_pos_score'] + sentence[i]['len_score']
 
     sorted_lst=sorted(sentence.items(), key=lambda x: x[1]['surface_score'],reverse=True)
-    for i in range(0,no_of_sentences):
+
+    for i in range(0, no_of_sentences):
         print(sentence[sorted_lst[i][0]]['content'])
+        print(sentence[sorted_lst[i][0]]['surface_score'])
+
 if __name__=="__main__":
-    sentrank(sys.argv)
+  sentrank(sys.argv)
 
 
 

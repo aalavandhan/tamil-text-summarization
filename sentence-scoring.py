@@ -27,7 +27,11 @@ class SentenceScoreCalculator:
     return self.surfaceScore(index, words) + self.headingScore(index, words)
 
   def surfaceScore(self, index, words):
-    return self.positionScore(index, words) + self.lengthScore(index, words) + self.paragraphScore(index, words)
+    return (
+      self.positionScore(index, words) +
+      self.lengthScore(index, words) +
+      self.paragraphScore(index, words)
+    )
 
   def paragraphScore(self, index, words):
     return 1 - ( self.paragraphStructure[index] / self.pCount )
@@ -37,8 +41,9 @@ class SentenceScoreCalculator:
       return 0
 
     wordsInHeading = len(filter(lambda w: w in self.hWords, words))
+    totalWords = ( math.log( len(words) ) + math.log( len(self.hWords) ) )
 
-    return float(wordsInHeading) / ( math.log( len(words) ) + math.log( len(self.hWords) ) )
+    return float(wordsInHeading) / totalWords
 
   def positionScore(self, index, words):
     return 1 - ( index / self.sCount )
@@ -49,7 +54,9 @@ class SentenceScoreCalculator:
 p = Preprocessor(PATH, 1).parse()
 scorer = SentenceScoreCalculator(p)
 
-summary = sorted(sorted(range(p.sCount), key=lambda s: scorer.score(s), reverse=True)[0:SIZE])
+summary = sorted(
+  sorted(
+    range(p.sCount), key=lambda s: scorer.score(s), reverse=True)[0:SIZE])
 
 for s in summary:
   print p.sentences[s]

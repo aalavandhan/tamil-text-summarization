@@ -1,58 +1,52 @@
 import sys
-import editdistance
+import operator
+import math
+import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize
 
-if __name__ == "__main__":
+from util.preprocessor import Preprocessor
+from util.word_counter import WordCounter
 
-	filePath=sys.argv[1]
-	number=sys.argv[2]
+from util.distance     import editDistance
 
-	fileObj=open(filePath,"r")
-	word_dict={}
-	total_words=0
-
-	for line in fileObj.read().split("."):
-		for word in line.split():
-			total_words=total_words+1
-			word_dict.setdefault(word,0)
-			word_dict[word]=word_dict[word]+1
-
-	fileObj.close()
-	sentence_weight_dict={}
-	sentence_no=0
-	sentence_length={}
-	line_dict={}
-	fileObj=open(filePath,"r")
-	for line in fileObj.read().split("."):
-		line.strip("\n")
-
-		if len(line) != 0:
-			sentence_no=sentence_no+1
-			sentence_weight_dict.setdefault(sentence_no,0)
-			sentence_length.setdefault(sentence_no,0)
-			# line.setdefault(sentence_no,"")
-			line_dict[sentence_no]=line
-			for word in line.split():
-				sentence_length[sentence_no]=sentence_length[sentence_no] + 1
-				affinity_weight=((word_dict[word]-1)/float(total_words))
-				sentence_weight_dict[sentence_no]=sentence_weight_dict[sentence_no]+ affinity_weight
-
-	fileObj.close()
-
-	# lsw_dict={}
-	vertex_weight={}
-	for key in sentence_weight_dict.keys():
-		vertex_weight.setdefault(key,0)
-		# lsw_dict.setdefault(key,{})
-		for sentence_no in sentence_weight_dict.keys():
-			if key != sentence_no:
-				vertex_weight[key]=vertex_weight[key] + ((max(sentence_length[key],sentence_length[sentence_no]) - editdistance.eval(line_dict[key].split(),line_dict[sentence_no].split()))/ float(max(sentence_length[key],sentence_length[sentence_no])))
+PATH = sys.argv[1]
+SIZE = int(sys.argv[2]) if len(sys.argv) > 2 else 3
 
 
+class SentenceScoreCalculator:
+  def __init__(self, p):
+    self.sCount = p.sCount
+    self.counter = WordCounter(p.sCount).count(p.processed)
+    self.vocabulary = self.counter.wordDict.keys()
+    self.nWords = len(self.vocabulary)
+    self.sentences = p.sentences
+    self.calcuateEditDistance()
 
-	rank={}
-	for key in sentence_weight_dict.keys():
-		rank.setdefault(key,0)
-		rank[key]=(sentence_weight_dict[key]+vertex_weight[key])/float(2)
+  def calcuateEditDistance(self):
+  	self.lsw = { }
 
-	for line_no in sorted(sorted(rank, key=rank.get, reverse=True)[1:int(number)+1]):
-		print str(line_dict[line_no]).strip()+"."
+  	for s in range(self.sCount):
+  		maxLen = lambda s2: max(len(self.sentences[s]), len(self.sentences[s2]))
+  		ed = lambda s2: editDistance(self.sentences[s], self.sentences[s2])
+  		lsw = lambda s2: float(maxLen(s2) - ed(s2)) / maxLen(s2)
+
+  		self.lsw[s] = sum(map(lsw, range(self.sCount)))
+
+  def sentenceWeight(self, index):
+    words = self.counter.sentenceDict[index].keys()
+    additionalOccurances = lambda w: ( self.counter.wordDict[w] - self.counter.sentenceDict[index][w] )
+
+    return reduce(lambda s, w: additionalOccurances(w) / self.nWords, words, 0)
+
+  def rank(self, index):
+  	return(self.sentenceWeight(index) + self.lsw[index])
+
+p = Preprocessor(PATH, 1).parse()
+scorer = SentenceScoreCalculator(p)
+
+summary = sorted(
+  sorted(
+    range(p.sCount), key=lambda s: scorer.rank(s), reverse=True)[0:SIZE])
+
+for s in summary:
+  print p.sentences[s]

@@ -7,4 +7,4 @@ def euclideanDistance(vector1, vector2):
   return dist
 
 def editDistance(w1, w2):
-  return editdistance.eval(w1, w2)
+  return float(editdistance.eval(w1, w2))

@@ -12,7 +12,6 @@ from util.distance     import editDistance
 PATH = sys.argv[1]
 SIZE = int(sys.argv[2]) if len(sys.argv) > 2 else 3
 
-
 class SentenceScoreCalculator:
   def __init__(self, p):
     self.sCount = p.sCount

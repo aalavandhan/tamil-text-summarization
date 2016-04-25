@@ -23,14 +23,14 @@ class SentenceScoreCalculator:
     self.calcuateEditDistance()
 
   def calcuateEditDistance(self):
-  	self.lsw = { }
+    self.lsw = { }
 
-  	for s in range(self.sCount):
-  		maxLen = lambda s2: max(len(self.sentences[s]), len(self.sentences[s2]))
-  		ed = lambda s2: editDistance(self.sentences[s], self.sentences[s2])
-  		lsw = lambda s2: float(maxLen(s2) - ed(s2)) / maxLen(s2)
+    for s in range(self.sCount):
+      maxLen = lambda s2: max(len(self.sentences[s]), len(self.sentences[s2]))
+      ed = lambda s2: editDistance(self.sentences[s], self.sentences[s2])
+      lsw = lambda s2: float(maxLen(s2) - ed(s2)) / maxLen(s2)
 
-  		self.lsw[s] = sum(map(lsw, range(self.sCount)))
+      self.lsw[s] = sum(map(lsw, range(self.sCount)))
 
   def sentenceWeight(self, index):
     words = self.counter.sentenceDict[index].keys()
@@ -39,7 +39,7 @@ class SentenceScoreCalculator:
     return reduce(lambda s, w: additionalOccurances(w) / self.nWords, words, 0)
 
   def rank(self, index):
-  	return(self.sentenceWeight(index) + self.lsw[index])
+    return(self.sentenceWeight(index) + self.lsw[index])
 
 p = Preprocessor(PATH, 1).parse()
 scorer = SentenceScoreCalculator(p)

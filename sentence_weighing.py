@@ -9,9 +9,6 @@ from util.word_counter import WordCounter
 
 from util.distance     import editDistance
 
-PATH = sys.argv[1]
-SIZE = int(sys.argv[2]) if len(sys.argv) > 2 else 3
-
 class SentenceScoreCalculator:
   def __init__(self, p):
     self.sCount = p.sCount
@@ -32,20 +29,29 @@ class SentenceScoreCalculator:
       self.lsw[s] = sum(map(lsw, range(self.sCount)))
 
   def sentenceWeight(self, index):
-    words = self.counter.sentenceDict[index].keys()
-    additionalOccurances = lambda w: ( self.counter.wordDict[w] - self.counter.sentenceDict[index][w] )
+    words = self.counter.wordsIn(index)
+    additionalOccurances = lambda w: ( self.counter.fetchWordCount(w) - self.counter.fetchSentenceWordCount(index, w) )
 
     return reduce(lambda s, w: additionalOccurances(w) / self.nWords, words, 0)
 
   def rank(self, index):
     return(self.sentenceWeight(index) + self.lsw[index])
 
-p = Preprocessor(PATH, 1).parse()
-scorer = SentenceScoreCalculator(p)
+def generateSummary(PATH, SIZE):
+  p = Preprocessor(PATH, 1).parse()
+  scorer = SentenceScoreCalculator(p)
 
-summary = sorted(
-  sorted(
-    range(p.sCount), key=lambda s: scorer.rank(s), reverse=True)[0:SIZE])
+  summary = sorted(
+    sorted(
+      range(p.sCount), key=lambda s: scorer.rank(s), reverse=True)[0:SIZE])
 
-for s in summary:
-  print p.sentences[s]
+  return map(lambda s: p.sentences[s], summary)
+
+
+if __name__ == "__main__":
+  PATH        = sys.argv[1]
+  SIZE        = int(sys.argv[2]) if len(sys.argv) > 2 else 3
+
+  # Print summary
+  for s in generateSummary(PATH, SIZE):
+    print s

@@ -8,15 +8,11 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from util.preprocessor import Preprocessor
 from util.word_counter import WordCounter
 
-PATH        = sys.argv[1]
-HEADING     = sys.argv[2]      if len(sys.argv) > 2 else ""
-SIZE        = int(sys.argv[3]) if len(sys.argv) > 3 else 3
-
 class SentenceScoreCalculator:
-  def __init__(self, p):
+  def __init__(self, p, HEADING):
     self.sCount = p.sCount
     self.pCount = p.pCount
-    self.hWords = word_tokenize(HEADING.decode('UTF-8'))
+    self.hWords = word_tokenize(HEADING)
     self.counter = WordCounter(p.sCount).count(p.processed)
     self.vocabulary = self.counter.wordDict.keys()
     self.paragraphStructure = p.paragraphStructure
@@ -43,7 +39,7 @@ class SentenceScoreCalculator:
     wordsInHeading = len(filter(lambda w: w in self.hWords, words))
     totalWords = ( math.log( len(words) ) + math.log( len(self.hWords) ) )
 
-    return float(wordsInHeading) / totalWords
+    return float(wordsInHeading) / totalWords if totalWords > 0 else 0
 
   def positionScore(self, index, words):
     return 1 - ( index / self.sCount )
@@ -51,14 +47,24 @@ class SentenceScoreCalculator:
   def lengthScore(self, index, words):
     return len(words) / len(self.vocabulary)
 
-p = Preprocessor(PATH, 1).parse()
-scorer = SentenceScoreCalculator(p)
+def generateSummary(PATH, SIZE, HEADING):
+  p = Preprocessor(PATH, 1).parse()
+  scorer = SentenceScoreCalculator(p, HEADING)
 
-summary = sorted(
-  sorted(
-    range(p.sCount), key=lambda s: scorer.score(s), reverse=True)[0:SIZE])
+  summary = sorted(
+    sorted(
+      range(p.sCount), key=lambda s: scorer.score(s), reverse=True)[0:SIZE])
 
-for s in summary:
-  print p.sentences[s]
+  return map(lambda s: p.sentences[s], summary)
+
+
+if __name__ == "__main__":
+  PATH        = sys.argv[1]
+  SIZE        = int(sys.argv[2]) if len(sys.argv) > 2 else 3
+  HEADING     = sys.argv[3]      if len(sys.argv) > 3 else ""
+
+  # Print summary
+  for s in generateSummary(PATH, SIZE, HEADING):
+    print s
 
 

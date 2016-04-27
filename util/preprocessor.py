@@ -19,7 +19,10 @@ class Preprocessor:
   def process(self, paragraph):
     for sentence in sent_tokenize(paragraph):
       self.sentences.append( sentence )
-      self.processed.append( map(lambda w: w[0], list(ngrams(word_tokenize(sentence), self.ngrams))) )
+
+      grams = list(ngrams(word_tokenize(sentence), self.ngrams))
+
+      self.processed.append( map(lambda g: " ".join(g), grams) )
 
       self.paragraphStructure[self.sCount] = self.pCount
       self.sCount = self.sCount + 1

@@ -5,7 +5,7 @@
 [Refrence : Section 2.1](http://research.ijcaonline.org/volume75/number6/pxc3890449.pdf)
 
 ```bash
-python sentence-scoring.py [ PATH TO FILE ] [ FILE HEADING ] [ N-SUMMARY-SENTENCES ]
+python sentence-scoring.py [ PATH TO FILE ] [ N-SUMMARY-SENTENCES ] [ FILE HEADING ]
 # (eg) python sentence-clustering.py test/data/article-4 'மதுரை மீனாட்சி அம்மனுக்கு பட்டாபிஷேகம்' 3
 ```
 

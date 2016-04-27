@@ -2,3 +2,4 @@ editdistance
 sklearn
 nltk
 scipy
+wikipedia

@@ -33,6 +33,17 @@ python sentence-clustering.py [ PATH TO FILE ] [ N-GRAMS ] [ N-CLUSTERS ] [ TERM
 
 ----
 
-Test data is present in `./test/data`
+Loading Wiki Data
+
+```
+mkidr test
+mkidr test/data
+mkidr test/summaries
+mkidr test/title
+cd util
+
+python wiki_loader.py
+
+```
 
 ----

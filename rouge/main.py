@@ -1,15 +1,15 @@
 import nltk
-from nltk.util import ngrams
+from nltk.util import ngrams, skipgrams
 from nltk.tokenize import word_tokenize, sent_tokenize
 
 from util.lcs import LCS
 from util.wlcs import WLCS
 from util.stemmer import stem
 
-from math import sqrt
+from math import sqrt, factorial
 
 def nCr(n,r):
-    f = math.factorial
+    f = factorial
     return f(n) / f(r) / f(n-r)
 
 def tokenize(text, grams=1):
@@ -53,11 +53,10 @@ def rougeW(candidateSummary, refrenceSummaries):
 def rougeS(candidateSummary, refrenceSummaries):
   B = 1
 
-  candidateTokens = (tokenize(candidateSummary))
-  refTokens = lambda s: (tokenize(s))
-  skip2  = lambda s: len(skipgrams(candidateTokens,2,2) & skipgrams(refTokens(s),2,2))
-  Rskip2 = lambda s: float(skip(s)) / nCr(len(candidateSummary),2)
-  Pskip2 = lambda s: float(skip(s)) / nCr(len(s),2)
+  candidateTokens = tokenize(candidateSummary)
+  skip2  = lambda s: len(set(list(skipgrams(candidateTokens,2,2))) & set(list(skipgrams(tokenize(s), 2, 2))))
+  Rskip2 = lambda s: float(skip2(s)) / nCr(len(candidateSummary), 2)
+  Pskip2 = lambda s: float(skip2(s)) / nCr(len(s),2)
 
   Fskip2 = lambda s: (1 + B ** 2) * Rskip2(s) * Pskip2(s) / ( Rskip2(s) + B ** 2 * Pskip2(s) ) if skip2(s) > 0 else 0
 

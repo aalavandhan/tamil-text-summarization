@@ -22,9 +22,9 @@ def rougeN(candidateSummary, refrenceSummaries, grams):
   return max(map(rogueScore, refrenceSummaries))
 
 def rougeL(candidateSummary, refrenceSummaries):
-  B = 10000
+  B = 1
 
-  lcs  = lambda s: len( LCS(tokenize(candidateSummary), tokenize(s)) ) / 3
+  lcs  = lambda s: len( LCS(tokenize(candidateSummary), tokenize(s)) )
   Rlcs = lambda s: float(lcs(s)) / len(candidateSummary)
   Plcs = lambda s: float(lcs(s)) / len(s)
 

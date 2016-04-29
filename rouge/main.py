@@ -31,3 +31,14 @@ def rougeL(candidateSummary, refrenceSummaries):
   Flcs = lambda s: (1 + B ** 2) * Rlcs(s) * Plcs(s) / ( Rlcs(s) + B ** 2 * Plcs(s) ) if lcs(s) > 0 else 0
 
   return max(map(Flcs, refrenceSummaries))
+
+def rougeL(candidateSummary, refrenceSummaries):
+  B = 1
+
+  wlcs  = lambda s: ( WLCS(tokenize(candidateSummary), tokenize(s)) )
+  Rlcs = lambda s: sqrt(float(wlcs(s)) / pow((len(candidateSummary)),2))
+  Plcs = lambda s: sqrt(float(wlcs(s)) / pow((len(s)),2))
+
+  Flcs = lambda s: (1 + B ** 2) * Rlcs(s) * Plcs(s) / ( Rlcs(s) + B ** 2 * Plcs(s) ) if wlcs(s) > 0 else 0
+
+  return max(map(Flcs, refrenceSummaries))

@@ -5,6 +5,8 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 from util.lcs import LCS
 from util.stemmer import stem
 
+import math
+
 def tokenize(text, grams=1):
   wordStems = lambda s: map(stem, word_tokenize(s))
   sentTokens = lambda tok, s: tok + wordStems(s)
@@ -32,7 +34,7 @@ def rougeL(candidateSummary, refrenceSummaries):
 
   return max(map(Flcs, refrenceSummaries))
 
-def rougeL(candidateSummary, refrenceSummaries):
+def rougeW(candidateSummary, refrenceSummaries):
   B = 1
 
   wlcs  = lambda s: ( WLCS(tokenize(candidateSummary), tokenize(s)) )

@@ -1,3 +1,5 @@
+import math
+
 def func(k):
 	return pow(k,2)
 

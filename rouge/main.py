@@ -8,6 +8,10 @@ from util.stemmer import stem
 
 from math import sqrt
 
+def nCr(n,r):
+    f = math.factorial
+    return f(n) / f(r) / f(n-r)
+
 def tokenize(text, grams=1):
   wordStems = lambda s: map(stem, word_tokenize(s))
   sentTokens = lambda tok, s: tok + wordStems(s)
@@ -45,3 +49,16 @@ def rougeW(candidateSummary, refrenceSummaries):
   Flcs = lambda s: (1 + B ** 2) * Rlcs(s) * Plcs(s) / ( Rlcs(s) + B ** 2 * Plcs(s) ) if wlcs(s) > 0 else 0
 
   return max(map(Flcs, refrenceSummaries))
+
+def rougeS(candidateSummary, refrenceSummaries):
+  B = 1
+
+  candidateTokens = (tokenize(candidateSummary))
+  refTokens = lambda s: (tokenize(s))
+  skip2  = lambda s: len(skipgrams(candidateTokens,2,2) & skipgrams(refTokens(s),2,2))
+  Rskip2 = lambda s: float(skip(s)) / nCr(len(candidateSummary),2)
+  Pskip2 = lambda s: float(skip(s)) / nCr(len(s),2)
+
+  Fskip2 = lambda s: (1 + B ** 2) * Rskip2(s) * Pskip2(s) / ( Rskip2(s) + B ** 2 * Pskip2(s) ) if skip2(s) > 0 else 0
+
+  return max(map(Fskip2, refrenceSummaries))

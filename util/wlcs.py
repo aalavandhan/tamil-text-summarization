@@ -10,9 +10,9 @@ def WLCS(wordsA, wordsB):
 	for i, x in enumerate(wordsA):
     	for j, y in enumerate(wordsB):
       		if x == y:
-      			k=wij[i-1][j-1]
-      			cij=cij[i-1,j-1] + func(k+1) - func(k)
-      			wij=k+1
+      			k = wij[i-1][j-1]
+      			cij[i][j] = cij[i-1,j-1] + func(k + 1) - func(k)
+      			wij[i][j] = k + 1
       		  
       		else:
         		if c[i-1][j] > c[i][j-1]:

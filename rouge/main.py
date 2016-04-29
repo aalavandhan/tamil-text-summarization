@@ -3,9 +3,10 @@ from nltk.util import ngrams
 from nltk.tokenize import word_tokenize, sent_tokenize
 
 from util.lcs import LCS
+from util.wlcs import WLCS
 from util.stemmer import stem
 
-import math
+from math import sqrt
 
 def tokenize(text, grams=1):
   wordStems = lambda s: map(stem, word_tokenize(s))
@@ -26,7 +27,7 @@ def rougeN(candidateSummary, refrenceSummaries, grams):
 def rougeL(candidateSummary, refrenceSummaries):
   B = 1
 
-  lcs  = lambda s: len( LCS(tokenize(candidateSummary), tokenize(s)) )
+  lcs  = lambda s: len( LCS(tokenize(candidateSummary), tokenize(s)) ) / 3
   Rlcs = lambda s: float(lcs(s)) / len(candidateSummary)
   Plcs = lambda s: float(lcs(s)) / len(s)
 
@@ -37,9 +38,9 @@ def rougeL(candidateSummary, refrenceSummaries):
 def rougeW(candidateSummary, refrenceSummaries):
   B = 1
 
-  wlcs  = lambda s: ( WLCS(tokenize(candidateSummary), tokenize(s)) )
-  Rlcs = lambda s: sqrt(float(wlcs(s)) / pow((len(candidateSummary)),2))
-  Plcs = lambda s: sqrt(float(wlcs(s)) / pow((len(s)),2))
+  wlcs  = lambda s: WLCS(tokenize(candidateSummary), tokenize(s))
+  Rlcs = lambda s: sqrt( float(wlcs(s)) / pow(len(candidateSummary),2) )
+  Plcs = lambda s: sqrt( float(wlcs(s)) / pow(len(s),2) )
 
   Flcs = lambda s: (1 + B ** 2) * Rlcs(s) * Plcs(s) / ( Rlcs(s) + B ** 2 * Plcs(s) ) if wlcs(s) > 0 else 0
 
